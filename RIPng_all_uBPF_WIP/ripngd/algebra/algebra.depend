@@ -1,0 +1,147 @@
+# depslib dependency file v1.0
+1597421342 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/cust_malloc.c
+	"cust_malloc.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/cust_malloc.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1597482869 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/binary_lexical_product.c
+	"binary_lexical_product.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/binary_lexical_product.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597483224 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/class_algebra.h
+	<string.h>
+	"cust_malloc.h"
+	"seq.h"
+
+1597483224 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/disjunction.c
+	"disjunction.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/disjunction.h
+	"class_algebra.h"
+
+1597483232 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/class_algebra.c
+	"class_algebra.h"
+
+1597482870 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/integer_addition.c
+	"integer_addition.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/integer_addition.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597482862 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/integer_product.c
+	"integer_product.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/integer_product.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597482859 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/local_preference.c
+	"local_preference.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/local_preference.h
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597482855 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/maximum.c
+	"maximum.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/maximum.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597482868 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/minimum.c
+	"minimum.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/minimum.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597272777 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/nary_lexical_product.c
+	"nary_lexical_product.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/nary_lexical_product.h
+	<stdarg.h>
+	"class_algebra.h"
+	"binary_lexical_product.h"
+
+1597482861 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/origin_preference.c
+	"origin_preference.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/origin_preference.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+
+1597482853 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/route_tags.c
+	"route_tags.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/route_tags.h
+	<stdlib.h>
+	"class_algebra.h"
+	"cust_malloc.h"
+	"seq.h"
+
+1597479515 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/seq.h
+	<stdlib.h>
+	"cust_malloc.h"
+
+1597482864 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/scoped_product.c
+	"scoped_product.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/scoped_product.h
+	"class_algebra.h"
+
+1597479514 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/seq.c
+	"seq.h"
+
+1597483475 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/sequences.c
+	"sequences.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/sequences.h
+	<stdlib.h>
+	"class_algebra.h"
+	"seq.h"
+	"cust_malloc.h"
+
+1597483422 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/simple_sequences.c
+	"simple_sequences.h"
+
+1597368459 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/simple_sequences.h
+	<stdlib.h>
+	"class_algebra.h"
+	"seq.h"
+	"sequences.h"
+	"cust_malloc.h"
+
+1597424538 source:/mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/test.c
+	"test.h"
+
+1597272777 /mnt/Sh/Cours/MASTER2/Master_thesis/frr/ripngd/algebra/test.h
+	<stdarg.h>
+	"integer_addition.h"
+	"integer_product.h"
+	"minimum.h"
+	"maximum.h"
+	"local_preference.h"
+	"origin_preference.h"
+	"sequences.h"
+	"simple_sequences.h"
+	"route_tags.h"
+	"binary_lexical_product.h"
+	"nary_lexical_product.h"
+	"scoped_product.h"
+	"disjunction.h"
+	"cust_malloc.h"
+

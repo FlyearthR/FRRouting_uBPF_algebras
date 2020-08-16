@@ -1,0 +1,15 @@
+{
+  "jit_all": false,
+  "dir": "/home/vagrant/Master_thesis/RIPng_integer_uBPF/ubpf_tools/plugins/ripng",
+  "plugins": {
+    "Routing algebra": {
+      "extra_mem": 65536,
+      "shared_mem": 0,
+      "replace": {
+        "0": {
+          "path": "algebra.o"
+        }
+      }
+    }
+  }
+}

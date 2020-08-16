@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Initializing the plugin manager &mdash; uBPF Library  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Plugin Memory" href="plugin_memory.html" />
+    <link rel="prev" title="Pluginize C functions" href="pluginizing_function.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="contents.html" class="icon icon-home"> uBPF Library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginizing_function.html">Pluginize C functions</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Initializing the plugin manager</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#loading-bytecode-at-program-startup">Loading bytecode at program startup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example">Example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_memory.html">Plugin Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writing_pluglets.html">Writing pluglets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_pluglet_insertion.html">Dynamic pluglet insertion</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">uBPF Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="contents.html">Docs</a> &raquo;</li>
+        
+      <li>Initializing the plugin manager</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/init_plugin_manager.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="initializing-the-plugin-manager">
+<h1>Initializing the plugin manager<a class="headerlink" href="#initializing-the-plugin-manager" title="Permalink to this headline">¶</a></h1>
+<p>In order to use the insertion points defined in your program, the plugin manager has to be initialized.
+This must be done with the function call :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">init_plugin_manager</span><span class="p">(</span><span class="n">proto_ext_fun_t</span> <span class="o">*</span><span class="n">external_function</span><span class="p">,</span>
+                        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">project_conf_dir</span><span class="p">,</span>
+                        <span class="kt">size_t</span> <span class="n">len_char</span><span class="p">,</span>
+                        <span class="n">plugin_info_t</span> <span class="o">*</span><span class="n">insertion_point</span><span class="p">,</span>
+                        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">monitoring_address</span><span class="p">,</span>
+                        <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">port</span><span class="p">,</span>
+                        <span class="kt">int</span> <span class="n">require_monitoring</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is the only required function to call on the very beginning of the entry point of your program. The function
+takes multiple parameters which are explained below :</p>
+<dl class="docutils">
+<dt>external_function</dt>
+<dd>Is an array of proto_ext_fun_t structure defining an extra external call (see section TODO). The structure
+take the string name of the function and the pointer related to it.
+The last element of this list must be the NULL structure. The library might crash if this termination element
+is omitted</dd>
+<dt>project_conf_dir</dt>
+<dd>The path associated to the configuration folder of your program. It is used to indicate the location of the
+plugin folder and the json required to correctly load eBPF bytecode.</dd>
+<dt>len_char</dt>
+<dd>Actual size of the <cite>project_conf_dir</cite> string</dd>
+<dt>insertion_point</dt>
+<dd><p class="first">Array containing all the insertion point to take into account. This array contains plugin_info_t structure
+which contains two fields:</p>
+<ol class="arabic simple">
+<li><strong>*plugin_str*</strong> :  the string name of the actual insertion point.</li>
+<li><strong>*plugin_id*</strong> : the identifier associated to this insertion point</li>
+</ol>
+<p class="last">The string is used in parallel with the json file (TODO). The identifier is used with the definition of an
+insertion point as explained in the “pluginization” section (TODO reference)</p>
+</dd>
+<dt>monitoring_address</dt>
+<dd>Some plugins might want to send data to an external exporter to be eventually analysed after. This string
+is either the IP address of the exporter or its domain name</dd>
+<dt>monitoring_port</dt>
+<dd>The port of the exporter</dd>
+<dt>require_monitoring</dt>
+<dd>If no plugins are intended to send data, put this argument to 0. This tells to the library to not start the
+monitoring listener. Also, if monitoring_address, monitoring_port are not null, and libubpf cannot
+reach the external server, every data sent by plugins will be dropped. However, if require_monitoring is
+set to 1, the manager will wait until a connection is established with the server.</dd>
+</dl>
+<div class="section" id="loading-bytecode-at-program-startup">
+<h2>Loading bytecode at program startup<a class="headerlink" href="#loading-bytecode-at-program-startup" title="Permalink to this headline">¶</a></h2>
+<p>libubpf provide a function to load plugins from a JSON file. This latter must be formatted on a specific way
+to be recognised by the helper. It has the following definition :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">load_plugin_from_json</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">path_json</span><span class="p">,</span>
+                          <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">plugin_folder_path</span><span class="p">,</span>
+                          <span class="kt">size_t</span> <span class="n">len_plugin_folder_path</span><span class="p">);</span>
+</pre></div>
+</div>
+<dl class="docutils">
+<dt>path_json</dt>
+<dd>Is the path to access to the json containing all the plugins to load when the program starts.</dd>
+<dt>plugin_folder_path</dt>
+<dd>Default path to the folder containing every plugins referenced in the JSON</dd>
+<dt>len_plugin_folder_path</dt>
+<dd>Length of the plugin_folder_path string</dd>
+</dl>
+<p>The JSON file must be structured as the following :</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;jit_all&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+  <span class="nt">&quot;dir&quot;</span><span class="p">:</span> <span class="s2">&quot;override/default/path&quot;</span><span class="p">,</span>
+  <span class="nt">&quot;plugins&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;plugin_name_1&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;extra_mem&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+      <span class="nt">&quot;shared_mem&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+      <span class="nt">&quot;pre&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;0&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;jit&quot;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+          <span class="nt">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;pre_plugin1_seq0.o&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;25&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;jit&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;pre_plugin1_seq25.o&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;6&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;pre_plugin1_seq6.o&quot;</span>
+        <span class="p">}</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;replace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;jit&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;replace_plugin1.o&quot;</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;post&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;125&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;jit&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;post_plugin1_seq125.o&quot;</span>
+        <span class="p">},</span>
+        <span class="nt">&quot;0&quot;</span><span class="p">:</span> <span class="p">{</span>
+          <span class="nt">&quot;jit&quot;</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+          <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;post_plugin1_seq0.o&quot;</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="nt">&quot;plugin_name_2&quot;</span><span class="p">:</span> <span class="p">{</span>
+      <span class="nt">&quot;extra_mem&quot;</span><span class="p">:</span> <span class="mi">64</span><span class="p">,</span>
+      <span class="nt">&quot;shared_mem&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="nt">&quot;replace&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;path&quot;</span><span class="p">:</span> <span class="s2">&quot;replace_plugin2.o&quot;</span>
+      <span class="p">},</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The structure follows the following syntax :</p>
+<dl class="docutils">
+<dt>jit_all</dt>
+<dd>true or false. This is the main directive to tell to libubpf to compile the code in x86_64 machine code
+and then directly execute the machine code when the plugin is called. If the attribute is missing the
+default value is false.</dd>
+<dt>dir</dt>
+<dd>Path of the folder containing of the eBPF bytecodes. If the variable is missing, libupf take the default
+value passed to the project_conf_dir argument of init_plugin_manager.</dd>
+<dt>plugins</dt>
+<dd><p class="first">Is the most important variable since it contains every plugin to be loaded inside the program.
+Each object of this variable takes as key, the name of the plugin such as defined in the array
+insertion_point of the function init_plugin_manager.
+The following keys are now used inside each plugins</p>
+<blockquote class="last">
+<div><dl class="docutils">
+<dt>extra_mem</dt>
+<dd>The number of <strong>bytes</strong> granted to the current plugin. If omitted, no additional memory will be
+provided for the plugin.</dd>
+<dt>shared_mem</dt>
+<dd>The number of <strong>bytes</strong> allowed to pass data through different pluglets of the same plugin.
+If omitted no shared memory space is created.</dd>
+<dt>pre</dt>
+<dd><p class="first">contains every pluglet associated to the “pre” hook of the plugin. Each pluglet are associated to
+a sequence number which is the order of execution of the plugin. A smaller number will be thus
+executed before an higher sequence number. Each pluglet can take two more keys :</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>jit</dt>
+<dd>true or false, override the jit_master choice defined on the root of the JSON object</dd>
+<dt>name</dt>
+<dd>name of the eBPF bytecode. The supported format is ELF. Use a compiler such as clang or gcc
+to generate an eBPF bytecode of this format.
+The bytecode must be contained inside the default folder or the path defined in the “dir”
+variable.</dd>
+</dl>
+</div></blockquote>
+<p class="last">The pre hook can be omitted. In this case, no pluglet will be attached to the pre hook of the plugin</p>
+</dd>
+<dt>replace</dt>
+<dd>Only one pluglet can be defined for this hook. Hence no sequence number must be provided.</dd>
+<dt>post</dt>
+<dd>Same description as the pre hook. All pluglet attached to this hook, will be executed right before
+returning the function associated to the plugin.</dd>
+</dl>
+</div></blockquote>
+</dd>
+</dl>
+</div>
+<div class="section" id="example">
+<h2>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h2>
+<p>Consider this small program :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+    <span class="n">start_main_program_loop</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">EXIT_FAILURE</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Suppose that you put one insertion point called “plugin1” with the ID 1 on a given function
+of your program. Suppose also one external call, “external_api_example”, you specifically created for your
+new insertion point. The new entry point of your program becomes :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">external_api_example</span><span class="p">(</span><span class="n">context_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">int</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// some stuffs</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+    <span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
+
+    <span class="n">proto_ext_fun_t</span> <span class="n">funcs</span><span class="p">[]</span>  <span class="o">=</span> <span class="p">{</span>
+        <span class="p">{.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;external_api_example&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">external_api_example</span> <span class="p">},</span>
+        <span class="n">plugin_info_null</span>
+    <span class="p">}</span>
+
+    <span class="n">plugin_info_t</span> <span class="n">plugins</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">{.</span><span class="n">plugin_str</span> <span class="o">=</span>  <span class="s">&quot;plugin1&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">plugin_id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">},</span>
+        <span class="p">{</span><span class="nb">NULL</span><span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">status</span> <span class="o">=</span> <span class="n">init_plugin_manager</span><span class="p">(</span><span class="n">funcs</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">plugins</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="n">EXIT_FAILURE</span><span class="p">;</span>
+
+    <span class="n">start_main_program_loop</span><span class="p">();</span>
+    <span class="k">return</span> <span class="n">EXIT_FAILURE</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As the monitoring address and port are set to NULL, eBPF bytecode will not be able to send data to an external
+server. Also, the project_conf_dir path is NULL. Hence, it is in the charge of the programmer to manually load
+eBPF bytecodes if they must be loaded before executing the first instructions of the real program.</p>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="plugin_memory.html" class="btn btn-neutral float-right" title="Plugin Memory" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="pluginizing_function.html" class="btn btn-neutral float-left" title="Pluginize C functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Thomas Wirtgen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

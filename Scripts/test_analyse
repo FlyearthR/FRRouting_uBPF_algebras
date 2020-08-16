@@ -1,0 +1,37 @@
+#! /bin/bash
+
+topo=ripng_network.py
+path=/home/Flyearth/Bureau/Cours/Cours-raccourci/MASTER2/Master_thesis/topo/
+N=5
+topos="full_mesh.py grid.py ring.py"
+for topo in $topos
+do
+    for N in {2..10}
+    do
+        test -f "$path/$topo/$N/resume.out" && rm -f $path/$topo/$N/resume.out
+        for i in {1..10}
+        do
+            finished=false
+            nrun="run$i"
+            echo "$topo $N $i"
+            test -f "$path/$topo/$N/$nrun/totat.out" && rm -f $path/$topo/$N/$nrun/totat.out
+            for ((i=0;i<N*N;i++))
+            do
+                if test -f "$path/$topo/$N/$nrun/r$i.out"
+                then
+                    cat $path/$topo/$N/$nrun/r$i.out >> $path/$topo/$N/$nrun/totat.out
+                    finished=true
+                else
+                    finished=false
+                    break
+                fi
+            done
+            if [ "$finished" = true ] ; then
+                sort $path/$topo/$N/$nrun/total.out
+                last=$(tail -n 1 $path/$topo/$N/$nrun/total.out)
+                first=$(head -n 1 $path/$topo/$N/$nrun/total.out)
+                echo $((last - first)) >> $path/$topo/$N/resume.out
+            fi
+        done
+    done
+done

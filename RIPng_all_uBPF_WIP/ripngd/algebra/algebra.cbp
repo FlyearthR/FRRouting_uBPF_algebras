@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="algebra" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/algebra" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/algebra" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="binary_lexical_product.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="binary_lexical_product.h" />
+		<Unit filename="class_algebra.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="class_algebra.h" />
+		<Unit filename="cust_malloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="cust_malloc.h" />
+		<Unit filename="disjunction.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="disjunction.h" />
+		<Unit filename="integer_addition.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="integer_addition.h" />
+		<Unit filename="integer_product.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="integer_product.h" />
+		<Unit filename="local_preference.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="local_preference.h" />
+		<Unit filename="maximum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="maximum.h" />
+		<Unit filename="minimum.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="minimum.h" />
+		<Unit filename="nary_lexical_product.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="nary_lexical_product.h" />
+		<Unit filename="origin_preference.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="origin_preference.h" />
+		<Unit filename="route_tags.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="route_tags.h" />
+		<Unit filename="scoped_product.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="scoped_product.h" />
+		<Unit filename="seq.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="seq.h" />
+		<Unit filename="sequences.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="sequences.h" />
+		<Unit filename="simple_sequences.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="simple_sequences.h" />
+		<Unit filename="test.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="test.h" />
+		<Extensions>
+			<envvars />
+			<code_completion />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

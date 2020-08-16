@@ -1,0 +1,46 @@
+#! /bin/bash
+
+function create_test() {
+    python -m ipmininet.clean &> /dev/null
+    echo "clear"
+    echo -e "#!/usr/bin/expect\n\nspawn python3 Master_thesis/topo/$topo $N $path/$topo/$N/$nrun\n\nset timeout -1\n\n" > test_ipmininet
+    for ((i=0;i<N*N;i++))
+    do
+        echo -e "expect \"mininet>\"\nsend \"r$i test_custom $path/$topo/$N/$nrun/r$i.out &\\\n\"" >> test_ipmininet
+    done
+    echo -e "expect \"mininet>\"\nsend \"exit\\\n\"\nexpect eof" >> test_ipmininet
+    chmod +x test_ipmininet
+    ./test_ipmininet
+}
+
+topo=ripng_network.py
+path=/home/vagrant/Master_thesis/topo/RIPng
+N=5
+topos="full_mesh.py grid.py ring.py"
+for i in {1..10}
+do
+    for N in {2..10}
+    do
+        for topo in $topos
+        do
+            finished=false
+            nrun="run$i"
+            echo "$topo $N $i"
+            for ((i=0;i<N*N;i++))
+            do
+                if test -f "$path/$topo/$N/$nrun/r$i.out"
+                then
+                    finished=true
+                else
+                    finished=false
+                    break
+                fi
+            done
+            if [ "$finished" = false ] ; then
+                touch $path/$topo/$N/$nrun/rX.out
+                rm -f $path/$topo/$N/$nrun/*.out
+                create_test
+            fi
+        done
+    done
+done

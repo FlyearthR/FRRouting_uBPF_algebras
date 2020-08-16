@@ -1,0 +1,334 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Helper Functions &mdash; uBPF Library  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Writing pluglets" href="writing_pluglets.html" />
+    <link rel="prev" title="Plugin Memory" href="plugin_memory.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="contents.html" class="icon icon-home"> uBPF Library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pluginizing_function.html">Pluginize C functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="init_plugin_manager.html">Initializing the plugin manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_memory.html">Plugin Memory</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Helper Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#calling-external-function-inside-ebpf-bytecode">Calling external function inside eBPF bytecode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="writing_pluglets.html">Writing pluglets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_pluglet_insertion.html">Dynamic pluglet insertion</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">uBPF Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="contents.html">Docs</a> &raquo;</li>
+        
+      <li>Helper Functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/helper_functions.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="helper-functions">
+<h1>Helper Functions<a class="headerlink" href="#helper-functions" title="Permalink to this headline">¶</a></h1>
+<p>A pluglet is a contiguous series of eBPF instructions. The eBPF instruction set do not allow making jumps to
+another function defined in the bytecode. However, eBPF allows to call functions which are not defined inside
+the pluglet bytecode, but rather inside the program where libubpf runs. It can be roughly compared to a Linux
+system call.</p>
+<p>libubpf provides way to include user defined external functions via the definition of an array :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">proto_ext_fun_t</span> <span class="n">funcs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="p">{.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;add_two&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">add_two</span><span class="p">},</span>
+        <span class="p">{.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;set_int_example&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">set_int_example</span><span class="p">},</span>
+        <span class="p">{.</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;post_function_call&quot;</span><span class="p">,</span> <span class="p">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">post_function_call</span><span class="p">},</span>
+        <span class="p">{</span><span class="nb">NULL</span><span class="p">}</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>This array will be then passed to the init_plugin_manager function when initializing the library. Each entry
+of this array takes two fields :</p>
+<ul class="simple">
+<li>The string name of the function, as it should be called on eBPF code. The name can be different than the
+one used to define the function. However, if the name has been altered, eBPF code must follow the exact string
+used on this object field.</li>
+<li>The pointer of the function in question</li>
+</ul>
+<p>When defining external functions, some precautions must be considered :</p>
+<ol class="arabic simple">
+<li>The external function cannot contain more than 5 arguments. This is a direct limitation of the eBPF
+instruction set.</li>
+<li>The first argument of the function is <strong>always</strong> a pointer to a context_t structure. The virtual machine
+rewrite each external function call to include a pointer to the execution context of the uBPF VM. This is
+particularly useful to check the validity of some arguments or to allocate memory inside the extra memory
+space of the pluglet.</li>
+<li>If the function returns a pointer, it must be inside the bound of the allowed memory for the pluglet.
+Otherwise, if the pointer is dereferenced, the eBPF bytecode will crash.</li>
+</ol>
+<div class="section" id="calling-external-function-inside-ebpf-bytecode">
+<h2>Calling external function inside eBPF bytecode<a class="headerlink" href="#calling-external-function-inside-ebpf-bytecode" title="Permalink to this headline">¶</a></h2>
+<p>As previously said, the VM will automatically insert the execution context to the arguments of the helper
+function. Suppose you defined an external function as such :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">add_two</span><span class="p">(</span><span class="n">context_t</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This helper function will be used inside every bytecode as :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">add_two</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The context is intentionally not provided to the bytecode since it contains internal structure of libubpf.
+The pointer is located on a memory area not allowed for the plugin. Which means that giving the context to
+the eBPF programmer is pretty useless.</p>
+<p>However, the context is particularly worthwhile to check the validity of some pointer. When defining arguments
+to pass on the plugin, the bpf_args_t structure contains a <code class="docutils literal notranslate"><span class="pre">type</span></code> field, which is a user defined integer.
+This integer can be used if the pointer given at argument of an helper function is valid.
+Consider this small example:</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">enum</span> <span class="n">ARGS_TYPE</span> <span class="p">{</span>
+    <span class="n">INT_GLOBAL</span><span class="p">,</span>
+    <span class="n">INT_PRIMITIVE</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">some_pluginized_function</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="n">bpf_args_t</span> <span class="n">args</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="p">{.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">a</span><span class="p">,</span> <span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">),</span> <span class="p">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind_ptr</span><span class="p">,</span> <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">INT_GLOBAL</span><span class="p">},</span>
+            <span class="p">{.</span><span class="n">arg</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="p">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind_primitive</span><span class="p">,</span> <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="n">INT_PRIMITIVE</span><span class="p">},</span>
+    <span class="p">};</span>
+
+    <span class="n">VM_CALL</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">new_val</span><span class="p">;</span>
+
+        <span class="n">new_val</span> <span class="o">=</span>  <span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+        <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">new_val</span><span class="p">;</span>
+        <span class="n">RETURN_VM_VAL</span><span class="p">(</span><span class="n">new_val</span><span class="p">);</span>
+    <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If you try to write a plugin which reproduce the same behavior as the original function, the modification of the
+pointer will be local to the execution of the plugin. Remember that variable is copied inside the VM memory when
+the data is requested.</p>
+<p>Hence to make the modification of the variable pointer by <code class="docutils literal notranslate"><span class="pre">a</span></code>, the bytecode has to call an helper function which
+will change the variable value. The bytecode associated to this function will then be :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">uint64_t</span> <span class="nf">main_replace_function</span><span class="p">(</span><span class="n">bpf_full_args_t</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">new_val</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">bpf_get_arg</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+    <span class="kt">int</span> <span class="o">*</span><span class="n">b</span> <span class="o">=</span> <span class="n">bpf_get_arg</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="p">);</span>
+
+    <span class="n">new_val</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span><span class="p">;</span>
+    <span class="n">set_int_global</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">new_val</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">new_val</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The external function <code class="docutils literal notranslate"><span class="pre">set_int_global</span></code> will set the variable pointed by a to the value of the third argument.
+This helper shows the use of the context to check if the call is valid. Here is its definition :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">set_int_global</span><span class="p">(</span><span class="n">context_t</span> <span class="o">*</span><span class="n">vm_ctx</span><span class="p">,</span> <span class="n">bpf_full_args_t</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pos_arg</span><span class="p">,</span> <span class="kt">int</span> <span class="n">new_value</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kt">int</span> <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">auto_get</span><span class="p">(</span><span class="n">INT_GLOBAL</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">a</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="o">*</span><span class="n">a</span> <span class="o">=</span> <span class="n">new_value</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The helper function contains some interesting instructions that are worth to discuss:</p>
+<ul>
+<li><p class="first"><code class="docutils literal notranslate"><span class="pre">auto_get</span></code> is a macro checking the validity of the argument located at position <code class="docutils literal notranslate"><span class="pre">pos_args</span></code> of the
+bytecode <code class="docutils literal notranslate"><span class="pre">args</span></code>. To use this macro, the first three arguments (and the name associated to the variables)
+must be exactly the same as depicted to the example above. We provide another macro <code class="docutils literal notranslate"><span class="pre">api_args</span></code> providing
+the first three arguments to avoid any programming errors. The definition of the same function is then :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">set_int_global</span><span class="p">(</span><span class="n">api_args</span><span class="p">,</span> <span class="kt">int</span> <span class="n">new_value</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The function body remains the same. <code class="docutils literal notranslate"><span class="pre">auto_get</span></code> is a macro function taking two argument :</p>
+<ol class="arabic simple">
+<li>The type of argument as defined in the <code class="docutils literal notranslate"><span class="pre">bpf_args_t</span></code> array</li>
+<li>The type of pointer (cast value)</li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">auto_get</span></code> returns the original pointer to the variable to modify. If the macro cannot check the validity of
+the argument, it returns NULL.</p>
+</li>
+<li><p class="first">The pointer returner by <code class="docutils literal notranslate"><span class="pre">auto_get</span></code> is the original pointer as defined in the <code class="docutils literal notranslate"><span class="pre">bpf_args_t</span></code> array. Any
+changes will be also visible outside the VM</p>
+</li>
+</ul>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="writing_pluglets.html" class="btn btn-neutral float-right" title="Writing pluglets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="plugin_memory.html" class="btn btn-neutral float-left" title="Plugin Memory" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Thomas Wirtgen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

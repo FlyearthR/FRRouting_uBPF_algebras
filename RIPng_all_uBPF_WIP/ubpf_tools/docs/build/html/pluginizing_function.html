@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Pluginize C functions &mdash; uBPF Library  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Initializing the plugin manager" href="init_plugin_manager.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="contents.html" class="icon icon-home"> uBPF Library
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Pluginize C functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#insertion-points">Insertion points</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-case-of-void-functions">The case of <cite>void</cite> functions</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="init_plugin_manager.html">Initializing the plugin manager</a></li>
+<li class="toctree-l1"><a class="reference internal" href="plugin_memory.html">Plugin Memory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="helper_functions.html">Helper Functions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="writing_pluglets.html">Writing pluglets</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dynamic_pluglet_insertion.html">Dynamic pluglet insertion</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="contents.html">uBPF Library</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="contents.html">Docs</a> &raquo;</li>
+        
+      <li>Pluginize C functions</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/pluginizing_function.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="pluginize-c-functions">
+<h1>Pluginize C functions<a class="headerlink" href="#pluginize-c-functions" title="Permalink to this headline">¶</a></h1>
+<p>libubpf is built to add insertion points inside your program so that external eBPF bytecode can be executed.
+This section will describe the procedure to
+Consider a simple function that linearly try to find an object in a sorted array :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">find_idx</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="kt">int</span> <span class="n">key</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+  <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">==</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>This function can be modified to speedup the lookup process. Without the VM, you need to rewrite the function
+and then recompile your code to increase this computation. On some programs such as network protocols, it might
+be difficult to restart it since it must run 24h/24h. If the above function was inside the protocol library, then
+you have to directly change its code. With libubpf, the designer of the library can add insertion points to this
+function so that external bytecode can be executed instead of the original function body.</p>
+<p>This section will describe the steps to transform this function as being an insertion point for the uBPF virtual
+machine.</p>
+<div class="section" id="insertion-points">
+<h2>Insertion points<a class="headerlink" href="#insertion-points" title="Permalink to this headline">¶</a></h2>
+<p>An insertion point is a given location in the code where the virtual machine can be executed.
+Inside an insertion point three type of VM anchor can be executed :</p>
+<div align="center" class="align-center"><img alt="Execution flow of a pluginized function compared to a normal function" src="_images/pluginized_function.svg" /></div>
+<ol class="arabic simple">
+<li>PRE anchor. This anchor can execute multiple bytecode of the same type. It will be executed before any
+instruction of the function. Each bytecode has only a read access to the function, and thus cannot modify
+internal structures of you program.</li>
+<li>REPLACE anchor. Bytecode associated to this anchor is the actual redefinition of the function body. Hence, it
+can modify the internal data of your program. Since this anchor can actual modify the data, libubpf only allows
+one REPLACE bytecode to be executed for the given insertion point. This will avoid to make undesired effects if
+two bytecode modify the same internal variable.</li>
+<li>POST anchor. Same as PRE anchor but all the bytecode associated to this anchor will be executed just before
+returning to the calling function (i.e. before finishing the <cite>pluginized</cite> function).</li>
+</ol>
+<p>To add an insertion
+point to the <cite>find_idx</cite> function described above, libubpf provides macro functions that will do the job for you.
+The function, will now become :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="kt">int</span> <span class="nf">find_idx</span><span class="p">(</span><span class="kt">int</span> <span class="o">*</span><span class="n">array</span><span class="p">,</span> <span class="kt">int</span> <span class="n">key</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">bpf_args_t</span> <span class="n">args</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="p">{.</span><span class="n">arg</span> <span class="o">=</span> <span class="n">array</span><span class="p">,</span> <span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">array</span><span class="p">)</span> <span class="o">*</span> <span class="n">len</span><span class="p">,</span> <span class="p">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind_ptr</span><span class="p">,</span> <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{.</span><span class="n">arg</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">key</span><span class="p">,</span> <span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">key</span><span class="p">),</span> <span class="p">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind_primitive</span><span class="p">,</span> <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">0</span><span class="p">},</span>
+    <span class="p">{.</span><span class="n">arg</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">,</span> <span class="p">.</span><span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">len</span><span class="p">),</span> <span class="p">.</span><span class="n">kind</span> <span class="o">=</span> <span class="n">kind_primitive</span><span class="p">,</span> <span class="p">.</span><span class="n">type</span> <span class="o">=</span> <span class="mi">0</span><span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="n">VM_CALL</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="p">{</span>
+      <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+      <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">len</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
+          <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="o">==</span> <span class="n">array</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="n">RETURN_VM_VAL</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="n">RETURN_VM_VAL</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+  <span class="p">})</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>As you can see, the procedure to add an insertion point can be summarized in three major parts :</p>
+<ol class="arabic">
+<li><p class="first">Create an array of argument that will be passed to the bytecode executed in this location of the code.
+This array must be of the type <cite>bpf_args_t</cite>. The fields of this structure are the following :</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="k">typedef</span> <span class="k">struct</span> <span class="n">bpf_args</span> <span class="p">{</span>
+  <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">len</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">kind</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">bpf_args_t</span><span class="p">;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li><em>arg</em> is the pointer of the argument. It is not possible to directly pass the “real” argument since
+the way to pass data to a eBPF bytecode is generic and do not depend on the function to pluginize.</li>
+<li><em>len</em> is the total size of the argument</li>
+<li><em>kind</em> whether the argument is a pointer or a primitive. Used by the internal libubpf library</li>
+<li><em>type</em> is a user custom id, providing extra information about the type of argument. It might be useful later
+when defining custom external API call. This could be a way to check if the argument passed to the external
+function is valid or not.</li>
+</ul>
+</li>
+<li><p class="first">Call the VM_CALL macro. The defintion of the macro is the following :</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">VM_CALL</span><span class="p">(</span><span class="n">plugin_id</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">number_of_arguments</span><span class="p">,</span> <span class="n">__VA_ARGS__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<ul class="simple">
+<li><em>plugin_id</em> is the numerical identifier corresponding to the insertion point. Since there could be multiple
+insertion points inside a same program, this interger will help libubpf to pick the right bytecode to execute
+when the virtual machine is called.</li>
+<li><em>argument</em> is the pointer of the array containing the argument to pass to the eBPF bytecode.</li>
+<li>__VA_ARGS__ is the actual definition of the function. If no bytecode is injected for this function (or
+insertion point)t this will be the code that will be executed instead. The function body must be written
+between two curly brackets to avoid compilation errors.</li>
+</ul>
+</li>
+<li><p class="first">Since the function returns a result, the <cite>return</cite> keyword must be replaced by another marco call :</p>
+<blockquote>
+<div><div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="n">RETURN_VM_VAL</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This macro will first call the POST part of the insertion point for you and then return with the value <cite>result</cite>
+given at argument of the macro.</p>
+</li>
+</ol>
+<div class="section" id="the-case-of-void-functions">
+<h3>The case of <cite>void</cite> functions<a class="headerlink" href="#the-case-of-void-functions" title="Permalink to this headline">¶</a></h3>
+<p>In the case of a <cite>void</cite> function, another macro is provided for you. Since the POST part of an insertion point is
+executed just before the return keyword. As the return keyword could appear everywhere, it is needed to
+explicitly change the “return” line by a macro in the case of a “returning” function. However, for a void
+function, if the “return” keyword must be summoned, then “nothing” needs to be returned from the function.
+Therefore, the two macro functions to use are :</p>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="cm">/* 1 */</span> <span class="n">VM_CALL_VOID</span><span class="p">(</span><span class="n">plugin_id</span><span class="p">,</span> <span class="n">arguments</span><span class="p">,</span> <span class="n">number_of_arguments</span><span class="p">,</span> <span class="n">__VA_ARGS__</span><span class="p">)</span>
+<span class="cm">/* 2 */</span> <span class="n">RETURN_VM_VOID</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>/* 1 */ The arguments are the same as VM_CALL defined above. It is not needed to explicitly add the return
+macro at the and of the body definition. The POST anchor is automatically called.</p>
+<p class="last">/* 2 */ same as RETURN_VM_VAL but without any arguments. This macro is only intended to be used with
+void functions.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="init_plugin_manager.html" class="btn btn-neutral float-right" title="Initializing the plugin manager" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="install.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Thomas Wirtgen
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

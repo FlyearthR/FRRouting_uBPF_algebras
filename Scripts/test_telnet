@@ -1,0 +1,14 @@
+#!/usr/bin/expect
+
+spawn telnet 127.0.0.1 2603 
+
+set timeout 1
+#The script expects login
+expect "Password:"
+#The script sends the password variable
+send "zebra\n"
+#This hands control of the keyboard over to you (Nice expect feature!)
+expect  -re ">"
+send "show ip ripng\n"
+expect ">"
+close

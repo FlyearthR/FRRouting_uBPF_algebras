@@ -1,0 +1,28 @@
+
+noinst_LIBRARIES += ubpf_tools/libubpf.a
+
+ubpf_tools_libubpf_a_SOURCES = \
+    ubpf_tools/ubpf_vm/vm/ubpf_jit_x86_64.c \
+    ubpf_tools/ubpf_vm/vm/ubpf_loader.c \
+    ubpf_tools/ubpf_vm/vm/ubpf_vm.c \
+    ubpf_tools/bpf_plugin.c \
+    ubpf_tools/hashmap.c \
+    ubpf_tools/list.c \
+    ubpf_tools/map.c \
+    ubpf_tools/monitoring_server.c \
+    ubpf_tools/plugins_manager.c \
+    ubpf_tools/queue.c \
+    ubpf_tools/shared_memory.c \
+    ubpf_tools/tree.c \
+    ubpf_tools/ubpf_api.c \
+    ubpf_tools/ubpf_context.c \
+    ubpf_tools/ubpf_manager.c \
+    ubpf_tools/ubpf_misc.c \
+    # end
+
+ubpf_tools_libubpf_a_CFLAGS = \
+    -I@top_srcdir@/ubpf_tools/ubpf_vm/vm/inc \
+    -I@top_srcdir@/ubpf_tools/include \
+    -I@top_srcdir@/ubpf_tools \
+    -fPIC -DPIC \
+    # end
